@@ -76,6 +76,7 @@ def apply_config_map(config_map_yaml, namespace):
     :return:
     """
     logging.info("apply_config_map")
+    subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", config_map_yaml, " --dry-run=client"])
     subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", config_map_yaml])
 
 def apply_secret(secret_yaml, namespace):
@@ -85,7 +86,21 @@ def apply_secret(secret_yaml, namespace):
     :return:
     """
     logging.info("apply_secret")
+    subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", secret_yaml, " --dry-run=client"])
     subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", secret_yaml])
+
+def replace_docker_image(filename, placeholder, docker_image):
+    # Safely read the input filename using 'with'
+    with open(filename) as f:
+        content = f.read()
+        if placeholder not in content:
+            logging.warning(f"Placeholder: {placeholder} not found in {filename}")
+            return
+
+    # Safely write the changed content, if found in the file
+    with open(filename, 'w') as f:
+        content = content.replace(placeholder, docker_image)
+        f.write(content)
 
 def apply_deployment(deployment_yaml, docker_image, namespace):
     """
@@ -94,6 +109,10 @@ def apply_deployment(deployment_yaml, docker_image, namespace):
     :return:
     """
     logging.info("apply_deployment")
+
+    replace_docker_image(deployment_yaml, "[[DOCKER_IMAGE]]", docker_image)
+
+    subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", deployment_yaml, " --dry-run=client"])
     subprocess.run(["kubectl", "--namespace", namespace, "apply", "-f", deployment_yaml])
 
 def main():
