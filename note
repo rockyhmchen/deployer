@@ -1,0 +1,2 @@
+python 3.12
+./deployer.py --plan artifect/deploy_plan.yaml --image harbor.asia.eeze/backoffice/back-office-ui:1.0.0 --namespace live-casino-backoffice

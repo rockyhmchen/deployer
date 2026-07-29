@@ -1,0 +1,5 @@
+plan:
+  manifest:
+    deployment: manifest/deployment.yaml
+    config_map: manifest/configmap-qa.yaml
+    secret: manifest/secret.yaml
